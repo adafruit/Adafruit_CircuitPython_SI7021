@@ -1,4 +1,3 @@
-
 Introduction
 ============
 
@@ -6,27 +5,57 @@ Introduction
     :target: https://circuitpython.readthedocs.io/projects/si7021/en/latest/
     :alt: Documentation Status
 
-.. image :: https://badges.gitter.im/adafruit/circuitpython.svg
+.. image:: https://badges.gitter.im/adafruit/circuitpython.svg
     :target: https://gitter.im/adafruit/circuitpython?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge
     :alt: Gitter
 
-TODO
-
 Dependencies
 =============
-This driver depends on:
 
-* `Adafruit CircuitPython <https://github.com/adafruit/circuitpython>`_
-* `Bus Device <https://github.com/adafruit/Adafruit_CircuitPython_BusDevice>`_
+This driver depends on the `Bus Device
+<https://github.com/adafruit/Adafruit_CircuitPython_BusDevice>`_ library.
+Please ensure is is also available on the CircuitPython filesystem.  This is
+easily achieved by downloading `a library and driver bundle
+<https://github.com/adafruit/Adafruit_CircuitPython_Bundle>`_.
 
-Please ensure all dependencies are available on the CircuitPython filesystem.
-This is easily achieved by downloading
-`the Adafruit library and driver bundle <https://github.com/adafruit/Adafruit_CircuitPython_Bundle>`_.
 
-Usage Example
-=============
+Usage Notes
+===========
 
-TODO
+Of course, you must import the library to use it:
+
+.. code:: python
+
+    import adafruit_si7021
+
+This driver takes an instantiated and active I2C object (from the `nativeio` or
+the `bitbangio` library) as an argument to its constructor.  The way to create
+an I2C object depends on the board you are using. For boards with labeled SCL
+and SDA pins, you can:
+
+.. code:: python
+
+    from bitbangio import I2C
+    #from nativeio import I2C
+    from board import SCL, SDA
+
+    i2c = I2C(SCL, SDA)
+
+Once you have created the I2C interface object, you can use it to instantiate
+the sensor object:
+
+.. code:: python
+
+    sensor = adafruit_si7021.SI7021(i2c)
+
+
+And then you can start measuring the temperature and humidity:
+
+.. code:: python
+
+    print(sensor.temperature)
+    print(sensor.relative_humidity)
+
 
 Contributing
 ============
@@ -34,6 +63,7 @@ Contributing
 Contributions are welcome! Please read our `Code of Conduct
 <https://github.com/adafruit/Adafruit_CircuitPython_si7021/blob/master/CODE_OF_CONDUCT.md>`_
 before contributing to help this project stay welcoming.
+
 
 API Reference
 =============
