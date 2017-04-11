@@ -74,8 +74,8 @@ class SI7021:
             try:
                 data = bytearray([_READ_USER1])
                 with self.i2c_device as i2c:
-                    i2c.writeto(data, stop=False)
-                    i2c.readfrom_into(data)
+                    i2c.write(data, stop=False)
+                    i2c.read_into(data)
                 value = data[0]
             except OSError as e:
                 if e.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
@@ -97,7 +97,7 @@ class SI7021:
             # While busy, the sensor doesn't respond to reads.
             try:
                 with self.i2c_device as i2c:
-                    i2c.readfrom_into(data)
+                    i2c.read_into(data)
             except OSError as e:
                 if e.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
                     raise
