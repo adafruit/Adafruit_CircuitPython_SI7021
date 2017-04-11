@@ -88,7 +88,7 @@ class SI7021:
 
     def _command(self, command):
         with self.i2c_device as i2c:
-            i2c.writeto(ustruct.pack('B', command))
+            i2c.write(ustruct.pack('B', command))
 
     def _data(self):
         data = bytearray(3)
