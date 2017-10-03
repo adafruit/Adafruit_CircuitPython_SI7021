@@ -30,7 +30,11 @@ This is a CircuitPython driver for the SI7021 temperature and humidity sensor.
 
 
 from micropython import const
-import ustruct
+try:
+    import struct
+except ImportError:
+    import ustruct as struct
+
 import sys
 
 from adafruit_bus_device.i2c_device import I2CDevice
@@ -88,7 +92,7 @@ class SI7021:
 
     def _command(self, command):
         with self.i2c_device as i2c:
-            i2c.write(ustruct.pack('B', command))
+            i2c.write(struct.pack('B', command))
 
     def _data(self):
         data = bytearray(3)
@@ -104,7 +108,7 @@ class SI7021:
             else:
                 if data[0] != 0xff: # Check if read succeeded.
                     break
-        value, checksum = ustruct.unpack('>HB', data)
+        value, checksum = struct.unpack('>HB', data)
         if checksum != _crc(data[:2]):
             raise ValueError("CRC mismatch")
         return value
