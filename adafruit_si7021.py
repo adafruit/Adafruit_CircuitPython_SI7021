@@ -32,7 +32,7 @@ This is a CircuitPython driver for the SI7021 temperature and humidity sensor.
 from micropython import const
 try:
     import struct
-except:
+except ImportError:
     import ustruct as struct
 
 import sys
