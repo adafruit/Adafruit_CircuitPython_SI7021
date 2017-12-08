@@ -27,18 +27,16 @@
 This is a CircuitPython driver for the SI7021 temperature and humidity sensor.
 
 """
-
-
-from micropython import const
 try:
     import struct
 except ImportError:
     import ustruct as struct
 
-import sys
-
 from adafruit_bus_device.i2c_device import I2CDevice
+from micropython import const
 
+__version__ = "0.0.0-auto.0"
+__repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
 
 HUMIDITY = const(0xf5)
 TEMPERATURE = const(0xf3)
@@ -51,7 +49,7 @@ def _crc(data):
     crc = 0
     for byte in data:
         crc ^= byte
-        for i in range(8):
+        for _ in range(8):
             if crc & 0x80:
                 crc <<= 1
                 crc ^= 0x131
@@ -59,19 +57,14 @@ def _crc(data):
                 crc <<= 1
     return crc
 
-
 class SI7021:
     """
     A driver for the SI7021 temperature and humidity sensor.
     """
 
-    def __init__(self, i2c, address=0x40):
-        self.i2c_device = I2CDevice(i2c, address)
-        self.init()
-        self._measurement = 0
-
-    def init(self):
-        self.reset()
+    def __init__(self, i2c_bus, address=0x40):
+        self.i2c_device = I2CDevice(i2c_bus, address)
+        self._command(_RESET)
         # Make sure the USER1 settings are correct.
         while True:
             # While restarting, the sensor doesn't respond to reads or writes.
@@ -81,14 +74,15 @@ class SI7021:
                     i2c.write(data, stop=False)
                     i2c.readinto(data)
                 value = data[0]
-            except OSError as e:
-                if e.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
+            except OSError as error:
+                if error.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
                     raise
             else:
                 break
         if value != _USER1_VAL:
             raise RuntimeError("bad USER1 register (%x!=%x)" % (
                 value, _USER1_VAL))
+        self._measurement = 0
 
     def _command(self, command):
         with self.i2c_device as i2c:
@@ -102,8 +96,8 @@ class SI7021:
             try:
                 with self.i2c_device as i2c:
                     i2c.readinto(data)
-            except OSError as e:
-                if e.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
+            except OSError as error:
+                if error.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
                     raise
             else:
                 if data[0] != 0xff: # Check if read succeeded.
@@ -113,12 +107,9 @@ class SI7021:
             raise ValueError("CRC mismatch")
         return value
 
-    def reset(self):
-        self._command(_RESET)
-
     @property
     def relative_humidity(self):
-        """The measured relative humidity in percents."""
+        """The measured relative humidity in percent."""
         self.start_measurement(HUMIDITY)
         value = self._data()
         self._measurement = 0
