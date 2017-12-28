@@ -74,9 +74,8 @@ class SI7021:
                     i2c.write(data, stop=False)
                     i2c.readinto(data)
                 value = data[0]
-            except OSError as error:
-                if error.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
-                    raise
+            except OSError:
+                pass
             else:
                 break
         if value != _USER1_VAL:
@@ -96,9 +95,8 @@ class SI7021:
             try:
                 with self.i2c_device as i2c:
                     i2c.readinto(data)
-            except OSError as error:
-                if error.args[0] not in ('I2C bus error', 19): # errno 19 ENODEV
-                    raise
+            except OSError:
+                pass
             else:
                 if data[0] != 0xff: # Check if read succeeded.
                     break
