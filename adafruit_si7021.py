@@ -26,6 +26,21 @@
 
 This is a CircuitPython driver for the SI7021 temperature and humidity sensor.
 
+* Author(s): Radomir Dopieralski
+
+Implementation Notes
+--------------------
+
+**Hardware:**
+
+* Adafruit `Si7021 Temperature & Humidity Sensor Breakout Board
+  <https://www.adafruit.com/product/3251>`_ (Product ID: 3251)
+
+**Software and Dependencies:**
+
+* Adafruit CircuitPython firmware for the ESP8622 and M0-based boards:
+  https://github.com/adafruit/circuitpython/releases
+* Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 try:
     import struct
@@ -60,6 +75,9 @@ def _crc(data):
 class SI7021:
     """
     A driver for the SI7021 temperature and humidity sensor.
+
+    :param i2c_bus: The `busio.I2C` object to use. This is the only required parameter.
+    :param int address: (optional) The I2C address of the device.
     """
 
     def __init__(self, i2c_bus, address=0x40):
