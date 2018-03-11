@@ -9,6 +9,10 @@ Introduction
     :target: https://adafru.it/discord
     :alt: Discord
 
+.. image:: https://travis-ci.org/adafruit/Adafruit_CircuitPython_SI7021.svg?branch=master
+    :target: https://travis-ci.org/adafruit/Adafruit_CircuitPython_SI7021
+    :alt: Build Status
+
 CircuitPython module for use with the SI7021 Temperature and Humidity Sensor.
 
 Dependencies
