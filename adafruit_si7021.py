@@ -129,7 +129,7 @@ class SI7021:
         self.start_measurement(HUMIDITY)
         value = self._data()
         self._measurement = 0
-        return value * 125.0 / 65536.0 - 6.0
+        return min(100.0, value * 125.0 / 65536.0 - 6.0)
 
     @property
     def temperature(self):
