@@ -89,8 +89,7 @@ class SI7021:
             try:
                 data = bytearray([_READ_USER1])
                 with self.i2c_device as i2c:
-                    i2c.write(data, stop=False)
-                    i2c.readinto(data)
+                    i2c.write_then_readinto(data, data)
                 value = data[0]
             except OSError:
                 pass
