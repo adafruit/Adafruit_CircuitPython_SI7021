@@ -53,11 +53,11 @@ from micropython import const
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
 
-HUMIDITY = const(0xf5)
-TEMPERATURE = const(0xf3)
-_RESET = const(0xfe)
-_READ_USER1 = const(0xe7)
-_USER1_VAL = const(0x3a)
+HUMIDITY = const(0xF5)
+TEMPERATURE = const(0xF3)
+_RESET = const(0xFE)
+_READ_USER1 = const(0xE7)
+_USER1_VAL = const(0x3A)
 
 
 def _crc(data):
@@ -71,6 +71,7 @@ def _crc(data):
             else:
                 crc <<= 1
     return crc
+
 
 class SI7021:
     """
@@ -96,17 +97,16 @@ class SI7021:
             else:
                 break
         if value != _USER1_VAL:
-            raise RuntimeError("bad USER1 register (%x!=%x)" % (
-                value, _USER1_VAL))
+            raise RuntimeError("bad USER1 register (%x!=%x)" % (value, _USER1_VAL))
         self._measurement = 0
 
     def _command(self, command):
         with self.i2c_device as i2c:
-            i2c.write(struct.pack('B', command))
+            i2c.write(struct.pack("B", command))
 
     def _data(self):
         data = bytearray(3)
-        data[0] = 0xff
+        data[0] = 0xFF
         while True:
             # While busy, the sensor doesn't respond to reads.
             try:
@@ -115,9 +115,9 @@ class SI7021:
             except OSError:
                 pass
             else:
-                if data[0] != 0xff: # Check if read succeeded.
+                if data[0] != 0xFF:  # Check if read succeeded.
                     break
-        value, checksum = struct.unpack('>HB', data)
+        value, checksum = struct.unpack(">HB", data)
         if checksum != _crc(data[:2]):
             raise ValueError("CRC mismatch")
         return value
