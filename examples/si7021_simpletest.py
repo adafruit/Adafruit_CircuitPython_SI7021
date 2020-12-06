@@ -6,9 +6,7 @@ import board
 import adafruit_si7021
 
 # Create library object using our Bus I2C port
-i2c = board.I2C()
-sensor = adafruit_si7021.SI7021(i2c)
-
+sensor = adafruit_si7021.SI7021(board.I2C())
 
 while True:
     print("\nTemperature: %0.1f C" % sensor.temperature)
