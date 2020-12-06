@@ -1,12 +1,12 @@
+"""
+Initializes the sensor, gets and prints readings every two seconds.
+"""
 import time
 import board
-import busio
 import adafruit_si7021
 
 # Create library object using our Bus I2C port
-i2c = busio.I2C(board.SCL, board.SDA)
-sensor = adafruit_si7021.SI7021(i2c)
-
+sensor = adafruit_si7021.SI7021(board.I2C())
 
 while True:
     print("\nTemperature: %0.1f C" % sensor.temperature)
