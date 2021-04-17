@@ -3,7 +3,7 @@
 # SPDX-License-Identifier: MIT
 
 """
-``adafruit_si7021``
+`adafruit_si7021`
 ===================
 
 This is a CircuitPython driver for the SI7021 temperature and humidity sensor.
@@ -20,8 +20,8 @@ Implementation Notes
 
 **Software and Dependencies:**
 
-* Adafruit CircuitPython firmware for the ESP8622 and M0-based boards:
-  https://github.com/adafruit/circuitpython/releases
+* Adafruit CircuitPython firmware for the supported boards:
+  https://circuitpython.org/downloads
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
 try:
@@ -91,8 +91,36 @@ class SI7021:
     """
     A driver for the SI7021 temperature and humidity sensor.
 
-    :param i2c_bus: The `busio.I2C` object to use. This is the only required parameter.
-    :param int address: (optional) The I2C address of the device.
+    :param i2c_bus: The `busio.I2C` object to use.
+    :param int address: The I2C device address for the sensor. Default is :const:`0x40`
+
+    **Quickstart: Importing and using the SI7021 temperature and humidity sensor**
+
+        Here is one way of importing the `SI7021` class so you can use it
+        with the name ``si_sensor``.
+        First you will need to import the libraries to use the sensor
+
+        .. code-block:: python
+
+            import busio
+            import board
+            import adafruit_si7021
+
+        Once this is done you can define your `busio.I2C` object and define your sensor object
+
+        .. code-block:: python
+
+            i2c = busio.I2C(board.SCL, board.SDA)
+            si_sensor = adafruit_si7021.SI7021(i2c)
+
+        Now you have access to the temperature and humidity using
+        :attr:`temperature` and :attr:`relative_humidity` attributes
+
+        .. code-block:: python
+
+            temperature = si_sensor.temperature
+            relative_humidity =  si_sensor.relative_humidity
+
     """
 
     def __init__(self, i2c_bus, address=0x40):
@@ -146,7 +174,7 @@ class SI7021:
 
     @property
     def temperature(self):
-        """The measured temperature in degrees Celcius."""
+        """The measured temperature in degrees Celsius."""
         self.start_measurement(TEMPERATURE)
         value = self._data()
         self._measurement = 0
@@ -159,7 +187,7 @@ class SI7021:
         Starts a measurement of either ``HUMIDITY`` or ``TEMPERATURE``
         depending on the ``what`` argument. Returns immediately, and the
         result of the measurement can be retrieved with the
-        ``temperature`` and ``relative_humidity`` properties. This way it
+        :attr:`temperature` and :attr:`relative_humidity` properties. This way it
         will take much less time.
 
         This can be useful if you want to start the measurement, but don't
