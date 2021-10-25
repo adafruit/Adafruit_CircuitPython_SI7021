@@ -88,6 +88,11 @@ And then you can start measuring the temperature and humidity:
     print(sensor.relative_humidity)
 
 
+Documentation
+=============
+
+API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/si7021/en/latest/>`_.
+
 Contributing
 ============
 
