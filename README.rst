@@ -2,7 +2,7 @@ Introduction
 ============
 
 .. image:: https://readthedocs.org/projects/adafruit-circuitpython-si7021/badge/?version=latest
-    :target: https://circuitpython.readthedocs.io/projects/si7021/en/latest/
+    :target: https://docs.circuitpython.org/projects/si7021/en/latest/
     :alt: Documentation Status
 
 .. image:: https://img.shields.io/discord/327254708534116352.svg
@@ -91,7 +91,7 @@ And then you can start measuring the temperature and humidity:
 Documentation
 =============
 
-API documentation for this library can be found on `Read the Docs <https://circuitpython.readthedocs.io/projects/si7021/en/latest/>`_.
+API documentation for this library can be found on `Read the Docs <https://docs.circuitpython.org/projects/si7021/en/latest/>`_.
 
 Contributing
 ============
