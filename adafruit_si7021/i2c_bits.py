@@ -1,6 +1,17 @@
-class _RWDifferentBit:
+# SPDX-FileCopyrightText: 2017 Radomir Dopieralski for Adafruit Industries
+#
+# SPDX-License-Identifier: MIT
 
-    def __init__(self, read_register_address, write_register_address, bit, register_width=1, lsb_first=True):
+
+class _RWDifferentBit:
+    def __init__(
+        self,
+        read_register_address,
+        write_register_address,
+        bit,
+        register_width=1,
+        lsb_first=True,
+    ):
         self._read_register = read_register_address
         self._write_register = write_register_address
         self.bit_mask = 1 << (bit % 8)  # the bitmask *within* the byte!
@@ -27,8 +38,8 @@ class _RWDifferentBit:
             self.buffer[0] = self._write_register
             i2c.write(self.buffer)
 
-class _RWDifferentBits:
 
+class _RWDifferentBits:
     def __init__(  # pylint: disable=too-many-arguments
         self,
         num_bits,
