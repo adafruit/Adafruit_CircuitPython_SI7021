@@ -27,8 +27,7 @@ Implementation Notes
 import struct
 
 from adafruit_bus_device.i2c_device import I2CDevice
-from adafruit_register.i2c_bit import RWBit, ROBit
-from adafruit_register.i2c_bits import RWBits, ROBits
+from adafruit_si7021.i2c_bits import _RWDifferentBit, _RWDifferentBits
 from micropython import const
 
 __version__ = "0.0.0-auto.0"
@@ -126,10 +125,8 @@ class SI7021:
 
     """
 
-    _heater_enable_read = ROBit(READ_HEATER_ENABLE, 2)
-    _heater_enable_write = RWBit(WRITE_HEATER_ENABLE, 2)
-    _heater_level_read = ROBits(4, READ_HEATER_LEVEL, 0)
-    _heater_level_write = RWBits(4, WRITE_HEATER_LEVEL, 0)
+    _heater_enable = _RWDifferentBit(READ_HEATER_ENABLE, WRITE_HEATER_ENABLE, 2)
+    _heater_level = _RWDifferentBits(4, READ_HEATER_LEVEL, WRITE_HEATER_LEVEL, 0)
 
     def __init__(self, i2c_bus, address=0x40):
         self.i2c_device = I2CDevice(i2c_bus, address)
@@ -211,8 +208,8 @@ class SI7021:
         ============  =================
 
         """
-        if self._heater_enable_read:
-            return self._heater_level_read + 1
+        if self._heater_enable:
+            return self._heater_level + 1
         return 0
 
     @heater_level.setter
@@ -223,7 +220,7 @@ class SI7021:
             raise ValueError("Heater level smust be between 0 and 16, inclusive")
         if level == 0:
             self._heater_enable_write = False
-        self._heater_enable_write = True
+        self._heater_enable = True
         self._heater_level_write = level - 1
 
     def start_measurement(self, what):
