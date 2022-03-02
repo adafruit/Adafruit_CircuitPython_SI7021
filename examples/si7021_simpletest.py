@@ -14,7 +14,8 @@ sensor = adafruit_si7021.SI7021(board.I2C())
 # If you'd like to use the heater, you can uncomment the code below
 # and pick a heater level that works for your purposes
 #
-# sensor.heater_level = 1
+# sensor.heater_enable = True
+# sensor.heater_level = 0  # Use any level from 0 to 15 inclusive
 
 while True:
     print("\nTemperature: %0.1f C" % sensor.temperature)

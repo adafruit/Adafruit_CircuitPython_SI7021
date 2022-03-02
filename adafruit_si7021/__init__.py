@@ -188,6 +188,17 @@ class SI7021:
         return value * 175.72 / 65536.0 - 46.85
 
     @property
+    def heater_enable(self):
+        """Whether or not the heater is enabled"""
+        return self.heater_enable
+
+    @heater_enable.setter
+    def heater_enable(self, setting):
+        if not isinstance(setting, bool):
+            raise TypeError("Setting must be True (enable) or False (disable)")
+        self._heater_enable = setting
+
+    @property
     def heater_level(self):
         """The heater level of the integrated resistive heating element.  Per
         the data sheet, the levels correspond to the following current draws:
@@ -195,34 +206,27 @@ class SI7021:
         ============  =================
         Heater Level  Current Draw (mA)
         ============  =================
-        0             Off
-        1             3.09
-        2             9.18
-        3             15.24
+        0             3.09
+        1             9.18
+        2             15.24
         .             .
-        5             27.39
+        4             27.39
         .             .
-        9             51.69
+        8             51.69
         .             .
-        16            94.20
+        15            94.20
         ============  =================
 
         """
-        if self._heater_enable:
-            return self._heater_level + 1
-        return 0
+        return self._heater_level
 
     @heater_level.setter
     def heater_level(self, level):
         if not isinstance(level, int):
             raise TypeError("Heater level must be int between 0 and 16, inclusive")
-        if not 0 <= level <= 16:
-            raise ValueError("Heater level smust be between 0 and 16, inclusive")
-        if level == 0:
-            self._heater_enable_write = False
-        else:
-            self._heater_enable = True
-            self._heater_level = level - 1
+        if not 0 <= level < 16:
+            raise ValueError("Heater level must be int between 0 and 15, inclusive")
+        self._heater_level = level
 
     def start_measurement(self, what):
         """
