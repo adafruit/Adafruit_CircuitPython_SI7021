@@ -220,8 +220,9 @@ class SI7021:
             raise ValueError("Heater level smust be between 0 and 16, inclusive")
         if level == 0:
             self._heater_enable_write = False
-        self._heater_enable = True
-        self._heater_level_write = level - 1
+        else:
+            self._heater_enable = True
+            self._heater_level = level - 1
 
     def start_measurement(self, what):
         """
