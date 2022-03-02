@@ -193,7 +193,7 @@ class SI7021:
     def heater_level(self):
         """The heater level of the integrated resistive heating element.  Per
         the data sheet, the levels correspond to the following current draws:
-        
+
         ============  =================
         Heater Level  Current Draw (mA)
         ============  =================
