@@ -223,7 +223,7 @@ class SI7021:
     @heater_level.setter
     def heater_level(self, level):
         if not isinstance(level, int):
-            raise TypeError("Heater level must be int between 0 and 16, inclusive")
+            raise TypeError("Heater level must be int between 0 and 15, inclusive")
         if not 0 <= level < 16:
             raise ValueError("Heater level must be int between 0 and 15, inclusive")
         self._heater_level = level
