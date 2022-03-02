@@ -1,8 +1,12 @@
 # SPDX-FileCopyrightText: 2017 Radomir Dopieralski for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
+"""
+Version of adafruit_register classes that account for the read
+and write registers being different
+"""
 
-
+# pylint: disable=too-many-arguments
 class _RWDifferentBit:
     def __init__(
         self,
@@ -39,6 +43,7 @@ class _RWDifferentBit:
             i2c.write(self.buffer)
 
 
+# pylint: disable=too-many-arguments
 class _RWDifferentBits:
     def __init__(  # pylint: disable=too-many-arguments
         self,
