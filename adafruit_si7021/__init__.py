@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2017 Radomir Dopieralski for Adafruit Industries
+# SPDX-FileCopyrightText: 2016 Scott Shawcroft for Adafruit Industries
 #
 # SPDX-License-Identifier: MIT
 
@@ -28,12 +28,17 @@ import struct
 
 from adafruit_bus_device.i2c_device import I2CDevice
 from micropython import const
+from adafruit_si7021.i2c_bits import _RWDifferentBit, _RWDifferentBits
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
 
 HUMIDITY = const(0xF5)
 TEMPERATURE = const(0xF3)
+WRITE_HEATER_LEVEL = const(0x51)
+READ_HEATER_LEVEL = const(0x11)
+WRITE_HEATER_ENABLE = const(0xE6)
+READ_HEATER_ENABLE = const(0xE7)
 _RESET = const(0xFE)
 _READ_USER1 = const(0xE7)
 _USER1_VAL = const(0x3A)
@@ -120,6 +125,9 @@ class SI7021:
 
     """
 
+    _heater_enable = _RWDifferentBit(READ_HEATER_ENABLE, WRITE_HEATER_ENABLE, 2)
+    _heater_level = _RWDifferentBits(4, READ_HEATER_LEVEL, WRITE_HEATER_LEVEL, 0)
+
     def __init__(self, i2c_bus, address=0x40):
         self.i2c_device = I2CDevice(i2c_bus, address)
         self._command(_RESET)
@@ -138,6 +146,8 @@ class SI7021:
         if value != _USER1_VAL:
             raise RuntimeError("bad USER1 register (%x!=%x)" % (value, _USER1_VAL))
         self._measurement = 0
+        self._heater_level = 0
+        self.heater_level = 0
 
     def _command(self, command):
         with self.i2c_device as i2c:
@@ -176,6 +186,47 @@ class SI7021:
         value = self._data()
         self._measurement = 0
         return value * 175.72 / 65536.0 - 46.85
+
+    @property
+    def heater_enable(self):
+        """Whether or not the heater is enabled"""
+        return self.heater_enable
+
+    @heater_enable.setter
+    def heater_enable(self, setting):
+        if not isinstance(setting, bool):
+            raise TypeError("Setting must be True (enable) or False (disable)")
+        self._heater_enable = setting
+
+    @property
+    def heater_level(self):
+        """The heater level of the integrated resistive heating element.  Per
+        the data sheet, the levels correspond to the following current draws:
+
+        ============  =================
+        Heater Level  Current Draw (mA)
+        ============  =================
+        0             3.09
+        1             9.18
+        2             15.24
+        .             .
+        4             27.39
+        .             .
+        8             51.69
+        .             .
+        15            94.20
+        ============  =================
+
+        """
+        return self._heater_level
+
+    @heater_level.setter
+    def heater_level(self, level):
+        if not isinstance(level, int):
+            raise TypeError("Heater level must be int between 0 and 15, inclusive")
+        if not 0 <= level < 16:
+            raise ValueError("Heater level must be int between 0 and 15, inclusive")
+        self._heater_level = level
 
     def start_measurement(self, what):
         """
