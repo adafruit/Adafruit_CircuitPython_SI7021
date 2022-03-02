@@ -218,9 +218,9 @@ class SI7021:
     @heater_level.setter
     def heater_level(self, level):
         if not isinstance(level, int):
-            raise TypeError("Heater level must be int between 0 and 17, inclusive")
-        if not 0 <= level <= 17:
-            raise ValueError("Heater level smust be between 0 and 17, inclusive")
+            raise TypeError("Heater level must be int between 0 and 16, inclusive")
+        if not 0 <= level <= 16:
+            raise ValueError("Heater level smust be between 0 and 16, inclusive")
         if level == 0:
             self._heater_enable_write = False
         self._heater_enable_write = True
