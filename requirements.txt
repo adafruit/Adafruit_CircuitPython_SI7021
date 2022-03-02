@@ -4,4 +4,3 @@
 
 Adafruit-Blinka
 adafruit-circuitpython-busdevice
-adafruit-circuitpython-register
