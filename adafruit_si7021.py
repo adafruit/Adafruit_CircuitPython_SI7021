@@ -27,6 +27,8 @@ Implementation Notes
 import struct
 
 from adafruit_bus_device.i2c_device import I2CDevice
+from adafruit_register.i2c_bit import RWBit, ROBit
+from adafruit_register.i2c_bits import RWBits, ROBits
 from micropython import const
 
 __version__ = "0.0.0-auto.0"
@@ -34,6 +36,10 @@ __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
 
 HUMIDITY = const(0xF5)
 TEMPERATURE = const(0xF3)
+WRITE_HEATER_LEVEL = const(0x51)
+READ_HEATER_LEVEL = const(0x11)
+WRITE_HEATER_ENABLE = const(0xE6)
+READ_HEATER_ENABLE = const(0xE7)
 _RESET = const(0xFE)
 _READ_USER1 = const(0xE7)
 _USER1_VAL = const(0x3A)
@@ -120,6 +126,11 @@ class SI7021:
 
     """
 
+    _heater_enable_read = ROBit(READ_HEATER_ENABLE, 2)
+    _heater_enable_write = RWBit(WRITE_HEATER_ENABLE, 2)
+    _heater_level_read = ROBits(4, READ_HEATER_LEVEL, 0)
+    _heater_level_write = RWBits(4, WRITE_HEATER_LEVEL, 0)
+
     def __init__(self, i2c_bus, address=0x40):
         self.i2c_device = I2CDevice(i2c_bus, address)
         self._command(_RESET)
@@ -138,6 +149,7 @@ class SI7021:
         if value != _USER1_VAL:
             raise RuntimeError("bad USER1 register (%x!=%x)" % (value, _USER1_VAL))
         self._measurement = 0
+        self._heater_level = 0
 
     def _command(self, command):
         with self.i2c_device as i2c:
@@ -176,6 +188,38 @@ class SI7021:
         value = self._data()
         self._measurement = 0
         return value * 175.72 / 65536.0 - 46.85
+
+    @property
+    def heater_level(self):
+        """The heater level of the integrated resistive heating element.  Per
+        the data sheet, the levels correspond to the following current draws:
+        
+        ============  =================
+        Heater Level  Current Draw (mA)
+        ============  =================
+        0             Off
+        1             3.09
+        2             9.18
+        3             15.24
+        ....          ....
+        5             27.39
+        ....          ....
+        9             51.69
+        ....          ....
+        17            94.20
+        ============  =================
+
+        """
+        if self._heater_enable_read:
+            return self._heater_level_read + 1
+        return 0
+
+    @heater_level.setter
+    def heater_level(self, level):
+        if level == 0:
+            self._heater_enable_write = False
+        self._heater_enable_write = True
+        self._heater_level_write = level - 1
 
     def start_measurement(self, what):
         """
