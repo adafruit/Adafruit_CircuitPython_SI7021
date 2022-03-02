@@ -150,6 +150,7 @@ class SI7021:
             raise RuntimeError("bad USER1 register (%x!=%x)" % (value, _USER1_VAL))
         self._measurement = 0
         self._heater_level = 0
+        self.heater_level = 0
 
     def _command(self, command):
         with self.i2c_device as i2c:
