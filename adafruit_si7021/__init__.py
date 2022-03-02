@@ -27,8 +27,8 @@ Implementation Notes
 import struct
 
 from adafruit_bus_device.i2c_device import I2CDevice
-from adafruit_si7021.i2c_bits import _RWDifferentBit, _RWDifferentBits
 from micropython import const
+from adafruit_si7021.i2c_bits import _RWDifferentBit, _RWDifferentBits
 
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
