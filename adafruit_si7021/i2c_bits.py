@@ -6,16 +6,22 @@ Version of adafruit_register classes that account for the read
 and write registers being different
 """
 
+try:
+    from typing import Optional, Type
+    from adafruit_si7021 import SI7021
+except ImportError:
+    pass
+
 # pylint: disable=too-many-arguments
 class _RWDifferentBit:
     def __init__(
         self,
-        read_register_address,
-        write_register_address,
-        bit,
-        register_width=1,
-        lsb_first=True,
-    ):
+        read_register_address: int,
+        write_register_address: int,
+        bit: int,
+        register_width: int = 1,
+        lsb_first: bool = True,
+    ) -> None:
         self._read_register = read_register_address
         self._write_register = write_register_address
         self.bit_mask = 1 << (bit % 8)  # the bitmask *within* the byte!
@@ -25,13 +31,13 @@ class _RWDifferentBit:
         else:
             self.byte = register_width - (bit // 8)  # the byte number within the buffer
 
-    def __get__(self, obj, objtype=None):
+    def __get__(self, obj: SI7021, objtype: Optional[Type[SI7021]] = None) -> bool:
         self.buffer[0] = self._read_register
         with obj.i2c_device as i2c:
             i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
         return bool(self.buffer[self.byte] & self.bit_mask)
 
-    def __set__(self, obj, value):
+    def __set__(self, obj: SI7021, value: bool) -> None:
         self.buffer[0] = self._read_register
         with obj.i2c_device as i2c:
             i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
@@ -47,14 +53,14 @@ class _RWDifferentBit:
 class _RWDifferentBits:
     def __init__(  # pylint: disable=too-many-arguments
         self,
-        num_bits,
-        read_register_address,
-        write_register_address,
-        lowest_bit,
-        register_width=1,
-        lsb_first=True,
-        signed=False,
-    ):
+        num_bits: int,
+        read_register_address: int,
+        write_register_address: int,
+        lowest_bit: int,
+        register_width: int = 1,
+        lsb_first: bool = True,
+        signed: bool = False,
+    ) -> None:
         self.bit_mask = ((1 << num_bits) - 1) << lowest_bit
         # print("bitmask: ",hex(self.bit_mask))
         if self.bit_mask >= 1 << (register_width * 8):
@@ -66,7 +72,7 @@ class _RWDifferentBits:
         self.lsb_first = lsb_first
         self.sign_bit = (1 << (num_bits - 1)) if signed else 0
 
-    def __get__(self, obj, objtype=None):
+    def __get__(self, obj: SI7021, objtype: Optional[Type[SI7021]] = None) -> int:
         self.buffer[0] = self._read_register
         with obj.i2c_device as i2c:
             i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
@@ -83,7 +89,7 @@ class _RWDifferentBits:
             reg -= 2 * self.sign_bit
         return reg
 
-    def __set__(self, obj, value):
+    def __set__(self, obj: SI7021, value: int):
         self.buffer[0] = self._read_register
         value <<= self.lowest_bit  # shift the value over to the right spot
         with obj.i2c_device as i2c:
