@@ -8,7 +8,6 @@ and write registers being different
 
 try:
     from typing import Optional, Type
-    from adafruit_si7021 import SI7021
 except ImportError:
     pass
 
@@ -31,13 +30,17 @@ class _RWDifferentBit:
         else:
             self.byte = register_width - (bit // 8)  # the byte number within the buffer
 
-    def __get__(self, obj: SI7021, objtype: Optional[Type[SI7021]] = None) -> bool:
+    def __get__(
+        self,
+        obj: "adafruit_si7021.SI7021",
+        objtype: Optional[Type["adafruit_si7021.SI7021"]] = None,
+    ) -> bool:
         self.buffer[0] = self._read_register
         with obj.i2c_device as i2c:
             i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
         return bool(self.buffer[self.byte] & self.bit_mask)
 
-    def __set__(self, obj: SI7021, value: bool) -> None:
+    def __set__(self, obj: "adafruit_si7021.SI7021", value: bool) -> None:
         self.buffer[0] = self._read_register
         with obj.i2c_device as i2c:
             i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
@@ -72,7 +75,11 @@ class _RWDifferentBits:
         self.lsb_first = lsb_first
         self.sign_bit = (1 << (num_bits - 1)) if signed else 0
 
-    def __get__(self, obj: SI7021, objtype: Optional[Type[SI7021]] = None) -> int:
+    def __get__(
+        self,
+        obj: "adafruit_si7021.SI7021",
+        objtype: Optional[Type["adafruit_si7021.SI7021"]] = None,
+    ) -> int:
         self.buffer[0] = self._read_register
         with obj.i2c_device as i2c:
             i2c.write_then_readinto(self.buffer, self.buffer, out_end=1, in_start=1)
@@ -89,7 +96,7 @@ class _RWDifferentBits:
             reg -= 2 * self.sign_bit
         return reg
 
-    def __set__(self, obj: SI7021, value: int):
+    def __set__(self, obj: "adafruit_si7021.SI7021", value: int):
         self.buffer[0] = self._read_register
         value <<= self.lowest_bit  # shift the value over to the right spot
         with obj.i2c_device as i2c:
