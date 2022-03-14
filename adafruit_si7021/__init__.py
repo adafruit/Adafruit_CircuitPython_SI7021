@@ -30,6 +30,12 @@ from adafruit_bus_device.i2c_device import I2CDevice
 from micropython import const
 from adafruit_si7021.i2c_bits import _RWDifferentBit, _RWDifferentBits
 
+try:
+    from typing import Optional, Tuple
+    from busio import I2C
+except ImportError:
+    pass
+
 __version__ = "0.0.0-auto.0"
 __repo__ = "https://github.com/adafruit/Adafruit_CircuitPython_SI7021.git"
 
@@ -46,7 +52,7 @@ _ID1_CMD = bytearray([0xFA, 0x0F])
 _ID2_CMD = bytearray([0xFC, 0xC9])
 
 
-def _crc(data):
+def _crc(data: bytearray) -> int:
     crc = 0
     for byte in data:
         crc ^= byte
@@ -59,7 +65,7 @@ def _crc(data):
     return crc
 
 
-def _convert_to_integer(bytes_to_convert):
+def _convert_to_integer(bytes_to_convert: bytearray) -> Optional[int]:
     """Use bitwise operators to convert the bytes into integers."""
     integer = None
     for chunk in bytes_to_convert:
@@ -71,7 +77,7 @@ def _convert_to_integer(bytes_to_convert):
     return integer
 
 
-def _get_device_identifier(identifier_byte):
+def _get_device_identifier(identifier_byte: int) -> str:
     """
     Convert the identifier byte to a device identifier (model type).
     Values are based on the information from page 24 of the datasheet.
@@ -128,7 +134,7 @@ class SI7021:
     _heater_enable = _RWDifferentBit(READ_HEATER_ENABLE, WRITE_HEATER_ENABLE, 2)
     _heater_level = _RWDifferentBits(4, READ_HEATER_LEVEL, WRITE_HEATER_LEVEL, 0)
 
-    def __init__(self, i2c_bus, address=0x40):
+    def __init__(self, i2c_bus: I2C, address: int = 0x40) -> None:
         self.i2c_device = I2CDevice(i2c_bus, address)
         self._command(_RESET)
         # Make sure the USER1 settings are correct.
@@ -149,11 +155,11 @@ class SI7021:
         self._heater_level = 0
         self.heater_level = 0
 
-    def _command(self, command):
+    def _command(self, command: int) -> None:
         with self.i2c_device as i2c:
             i2c.write(struct.pack("B", command))
 
-    def _data(self):
+    def _data(self) -> int:
         data = bytearray(3)
         data[0] = 0xFF
         while True:
@@ -172,7 +178,7 @@ class SI7021:
         return value
 
     @property
-    def relative_humidity(self):
+    def relative_humidity(self) -> float:
         """The measured relative humidity in percent."""
         self.start_measurement(HUMIDITY)
         value = self._data()
@@ -180,7 +186,7 @@ class SI7021:
         return min(100.0, value * 125.0 / 65536.0 - 6.0)
 
     @property
-    def temperature(self):
+    def temperature(self) -> float:
         """The measured temperature in degrees Celsius."""
         self.start_measurement(TEMPERATURE)
         value = self._data()
@@ -188,18 +194,18 @@ class SI7021:
         return value * 175.72 / 65536.0 - 46.85
 
     @property
-    def heater_enable(self):
+    def heater_enable(self) -> bool:
         """Whether or not the heater is enabled"""
         return self.heater_enable
 
     @heater_enable.setter
-    def heater_enable(self, setting):
+    def heater_enable(self, setting: bool) -> None:
         if not isinstance(setting, bool):
             raise TypeError("Setting must be True (enable) or False (disable)")
         self._heater_enable = setting
 
     @property
-    def heater_level(self):
+    def heater_level(self) -> int:
         """The heater level of the integrated resistive heating element.  Per
         the data sheet, the levels correspond to the following current draws:
 
@@ -221,14 +227,14 @@ class SI7021:
         return self._heater_level
 
     @heater_level.setter
-    def heater_level(self, level):
+    def heater_level(self, level: int) -> None:
         if not isinstance(level, int):
             raise TypeError("Heater level must be int between 0 and 15, inclusive")
         if not 0 <= level < 16:
             raise ValueError("Heater level must be int between 0 and 15, inclusive")
         self._heater_level = level
 
-    def start_measurement(self, what):
+    def start_measurement(self, what: int) -> None:
         """
         Starts a measurement.
 
@@ -251,16 +257,16 @@ class SI7021:
         self._measurement = what
 
     @property
-    def serial_number(self):
+    def serial_number(self) -> Optional[int]:
         """The device's unique ID (serial number)."""
         return self._get_device_info()[0]
 
     @property
-    def device_identifier(self):
+    def device_identifier(self) -> str:
         """A device identifier (model type) string."""
         return self._get_device_info()[1]
 
-    def _get_device_info(self):
+    def _get_device_info(self) -> Tuple[Optional[int], str]:
         """
         Get the serial number and the sensor identifier (model type).
         The identifier is part of the bytes returned for the serial number.
