@@ -13,6 +13,10 @@ Introduction
     :target: https://github.com/adafruit/Adafruit_CircuitPython_SI7021/actions/
     :alt: Build Status
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+    :target: https://github.com/psf/black
+    :alt: Code Style: Black
+
 CircuitPython module for use with the SI7021 Temperature and Humidity Sensor.
 
 Dependencies
