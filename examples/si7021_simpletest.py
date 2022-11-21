@@ -9,7 +9,9 @@ import board
 import adafruit_si7021
 
 # Create library object using our Bus I2C port
-sensor = adafruit_si7021.SI7021(board.I2C())
+i2c = board.I2C()  # uses board.SCL and board.SDA
+# i2c = board.STEMMA_I2C()  # For using the built-in STEMMA QT connector on a microcontroller
+sensor = adafruit_si7021.SI7021(i2c)
 
 # If you'd like to use the heater, you can uncomment the code below
 # and pick a heater level that works for your purposes
