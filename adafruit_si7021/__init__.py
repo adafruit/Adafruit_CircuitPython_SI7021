@@ -138,7 +138,12 @@ class SI7021:
     def __init__(self, i2c_bus: I2C, address: int = 0x40) -> None:
         self.i2c_device = I2CDevice(i2c_bus, address)
         self._command(_RESET)
+
+        # max 15ms Powerup Time after issuing software reset
+        # Table 2 inside of:
+        # https://cdn-learn.adafruit.com/assets/assets/000/035/931/original/Support_Documents_TechnicalDocs_Si7021-A20.pdf
         time.sleep(0.015)
+
         # Make sure the USER1 settings are correct.
         while True:
             # While restarting, the sensor doesn't respond to reads or writes.
