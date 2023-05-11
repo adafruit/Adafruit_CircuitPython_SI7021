@@ -11,6 +11,7 @@ try:
 except ImportError:
     pass
 
+
 # pylint: disable=too-many-arguments
 class _RWDifferentBit:
     def __init__(
