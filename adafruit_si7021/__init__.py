@@ -24,15 +24,18 @@ Implementation Notes
   https://circuitpython.org/downloads
 * Adafruit's Bus Device library: https://github.com/adafruit/Adafruit_CircuitPython_BusDevice
 """
+
 import struct
 import time
 
 from adafruit_bus_device.i2c_device import I2CDevice
 from micropython import const
+
 from adafruit_si7021.i2c_bits import _RWDifferentBit, _RWDifferentBits
 
 try:
     from typing import Optional, Tuple
+
     from busio import I2C
 except ImportError:
     pass
@@ -83,7 +86,7 @@ def _get_device_identifier(identifier_byte: int) -> str:
     Convert the identifier byte to a device identifier (model type).
     Values are based on the information from page 24 of the datasheet.
     """
-    if identifier_byte in (0x00, 0xFF):
+    if identifier_byte in {0x00, 0xFF}:
         identifier_string = "Engineering sample"
     elif identifier_byte == 0x0D:
         identifier_string = "Si7013"
@@ -157,7 +160,7 @@ class SI7021:
             else:
                 break
         if value != _USER1_VAL:
-            raise RuntimeError("bad USER1 register (%x!=%x)" % (value, _USER1_VAL))
+            raise RuntimeError(f"bad USER1 register ({value:x}!={_USER1_VAL:x})")
         self._measurement = 0
         self._heater_level = 0
         self.heater_level = 0
@@ -255,7 +258,7 @@ class SI7021:
         want the call to block until the measurement is ready -- for instance,
         when you are doing other things at the same time.
         """
-        if what not in (HUMIDITY, TEMPERATURE):
+        if what not in {HUMIDITY, TEMPERATURE}:
             raise ValueError()
         if not self._measurement:
             self._command(what)
@@ -290,9 +293,7 @@ class SI7021:
         with self.i2c_device as i2c:
             i2c.write_then_readinto(data, id2)
         # Combine the two halves
-        combined_id = bytearray(
-            [id1[0], id1[2], id1[4], id1[6], id2[0], id2[1], id2[3], id2[4]]
-        )
+        combined_id = bytearray([id1[0], id1[2], id1[4], id1[6], id2[0], id2[1], id2[3], id2[4]])
         # Convert serial number and extract identifier part
         serial = _convert_to_integer(combined_id)
         identifier = _get_device_identifier(id2[0])

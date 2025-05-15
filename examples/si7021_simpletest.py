@@ -4,8 +4,11 @@
 """
 Initializes the sensor, gets and prints readings every two seconds.
 """
+
 import time
+
 import board
+
 import adafruit_si7021
 
 # Create library object using our Bus I2C port
