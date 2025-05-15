@@ -12,7 +12,6 @@ except ImportError:
     pass
 
 
-# pylint: disable=too-many-arguments
 class _RWDifferentBit:
     def __init__(
         self,
@@ -53,9 +52,8 @@ class _RWDifferentBit:
             i2c.write(self.buffer)
 
 
-# pylint: disable=too-many-arguments
 class _RWDifferentBits:
-    def __init__(  # pylint: disable=too-many-arguments
+    def __init__(
         self,
         num_bits: int,
         read_register_address: int,
