@@ -23,6 +23,6 @@ sensor = adafruit_si7021.SI7021(i2c)
 # sensor.heater_level = 0  # Use any level from 0 to 15 inclusive
 
 while True:
-    print("\nTemperature: %0.1f C" % sensor.temperature)
-    print("Humidity: %0.1f %%" % sensor.relative_humidity)
+    print(f"\nTemperature: {sensor.temperature:0.1f} C")
+    print(f"Humidity: {sensor.relative_humidity:0.1f} %")
     time.sleep(2)

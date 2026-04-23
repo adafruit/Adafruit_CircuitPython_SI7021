@@ -76,8 +76,8 @@ def _convert_to_integer(bytes_to_convert: bytearray) -> Optional[int]:
         if not integer:
             integer = chunk
         else:
-            integer = integer << 8
-            integer = integer | chunk
+            integer <<= 8
+            integer |= chunk
     return integer
 
 
